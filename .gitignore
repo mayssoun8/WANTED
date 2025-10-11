@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+.env
+venv/
+pip-wheel-metadata/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+*.jsonl
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Arduino / PlatformIO
+*.elf
+*.hex
+*.bin
+*.eep
+/.pio/
+
+# Python bytecode, caches
+.pytest_cache/
+
+# Git
+/.gitignore
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+*.env
+
+# Misc
+*.zip
+*.tar.gz
+*.egg-info/
+
+# Project-specific
+lorawan/attacks/*/build/
+lorawan/attacks/*/*.exe
