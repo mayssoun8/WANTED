@@ -1,0 +1,252 @@
+# Replay Attacks avec LoRattack
+
+## 1. Installation de l’outil (détails supplémentaires sur [GitHub](https://github.com/konicst1/lorattack))
+
+### 1.1. Prérequis  
+Mise à jour du système :  
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+Installation de GNU Radio et ses dépendances :  
+```bash
+sudo apt install gnuradio
+```
+Installation de Bittwist (nécessaire pour l’injection de paquets) :  
+```bash
+sudo apt install bittwist
+```
+
+### 1.2. Installation des pilotes USRP  
+Ajout du dépôt et installation des pilotes nécessaires :  
+```bash
+sudo add-apt-repository ppa:ettusresearch/uhd
+sudo apt update
+sudo apt install libuhd-dev uhd-host
+```
+Téléchargement des images UHD adaptées à l’USRP :  
+```bash
+sudo /usr/lib/uhd/utils/uhd_images_downloader.py
+```
+
+### 1.3. Installation de LoRattack  
+Clonage du dépôt et installation des dépendances :  
+```bash
+git clone https://github.com/konicst1/lorattack.git
+cd lorattack
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+---
+
+## 2. Installation de **gr-lora** (en local, pas avec Docker)
+
+### 2.1. Prérequis  
+
+Mise à jour du système et installation des dépendances nécessaires :  
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install cmake g++ libboost-all-dev liblog4cpp5-dev libliquid-dev \
+    python3-mako python3-numpy python3-gi python3-gi-cairo liborc-0.4-dev swig
+```
+
+Si GNU Radio 3.10 n’est pas encore installé, ajout de celui-ci :  
+```bash
+sudo apt install gnuradio
+```
+Vérification de la version installée :  
+```bash
+gnuradio-config-info --version
+```
+Elle doit être **>= 3.10**.
+
+---
+
+### 2.2. Clonage et installation de `gr-lora`
+
+Clonage du dépôt de **gr-lora** :  
+```bash
+git clone https://github.com/rpp0/gr-lora.git
+cd gr-lora
+```
+
+Création d'un dossier `build`, compilation et installation :  
+```bash
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+make -j$(nproc)
+sudo make install
+```
+
+Mise à jour des bibliothèques :  
+```bash
+sudo ldconfig /usr/local/lib
+```
+
+---
+
+### 2.3. Vérification de l’installation
+
+Lancement de GNU Radio Companion et vérification de la présence des blocs **LoRa_TX, LoRa_RX et LoRa_Jammer** :  
+```bash
+gnuradio-companion &
+```
+
+---
+
+## 3. Installation de **gr-lora_sdr** (en local, sans Docker), nécessaires pour l'utilisation de certains outils de LoRattack comme le jammer
+
+### 3.1. Prérequis  
+
+Mise à jour du système et installation des dépendances nécessaires :  
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install cmake g++ libboost-all-dev liblog4cpp5-dev libliquid-dev \
+    python3-mako python3-numpy python3-gi python3-gi-cairo liborc-0.4-dev swig
+```
+
+Si GNU Radio 3.10 n’est pas encore installé, ajout de celui-ci :  
+```bash
+sudo apt install gnuradio
+```
+Vérification de la version installée :  
+```bash
+gnuradio-config-info --version
+```
+Elle doit être **>= 3.10**.
+
+---
+
+### 3.2. Clonage et installation de `gr-lora_sdr`
+
+Clonage du dépôt de **gr-lora_sdr** :  
+```bash
+git clone https://github.com/tapparelj/gr-lora_sdr.git
+cd gr-lora_sdr
+```
+
+Création d'un dossier `build`, compilation et installation :  
+```bash
+mkdir build
+cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+make -j$(nproc)
+sudo make install
+```
+
+Mise à jour des bibliothèques :  
+```bash
+sudo ldconfig /usr/local/lib
+```
+
+---
+
+### 3.3. Mise à jour des variables d’environnement
+
+Ajout des chemins nécessaires pour Python et les bibliothèques :  
+```bash
+export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
+Ajout de ces lignes à `~/.bashrc` pour rendre les modifications permanentes :  
+```bash
+echo 'export PYTHONPATH=/usr/local/lib/python3/dist-packages:$PYTHONPATH' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+### 3.4. Vérification de l’installation
+
+Lancement de GNU Radio Companion et vérification de la présence des blocs **LoRa_TX, LoRa_RX et LoRa_Jammer** :  
+```bash
+gnuradio-companion &
+```
+
+---
+
+### 3.5. Résolution de l'erreur `ImportError: libgnuradio-lora_sdr.so.1.0.0git: cannot open shared object file`
+
+#### 3.5.1. Vérification de l’emplacement de la bibliothèque
+
+Exécution de la commande suivante pour vérifier l'emplacement de la bibliothèque :  
+```bash
+find /usr/local -name "libgnuradio-lora_sdr.so*"
+```
+Si la bibliothèque est trouvée, notation de son chemin exact.
+
+#### 3.5.2. Mise à jour du `LD_LIBRARY_PATH`
+
+Si la bibliothèque est située dans un chemin spécifique (par exemple, `/usr/local/lib/x86_64-linux-gnu/`), ajout de ce chemin :  
+```bash
+export LD_LIBRARY_PATH=/usr/local/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+```
+
+Rendre cette modification permanente :  
+```bash
+echo 'export LD_LIBRARY_PATH=/usr/local/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### 3.5.3. Vérification de la prise en compte de la bibliothèque
+
+Exécution de :  
+```bash
+ldconfig -p | grep lora_sdr
+```
+
+Si la bibliothèque n’apparaît pas, forçage du rechargement des bibliothèques :  
+```bash
+sudo ldconfig
+```
+
+#### 3.5.4. Recompilation et réinstallation (si nécessaire)
+
+Si l'erreur persiste, exécution d'une recompilation complète :  
+```bash
+cd ~/gr-lora_sdr/build
+sudo make uninstall
+make clean
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+make -j$(nproc)
+sudo make install
+sudo ldconfig
+```
+
+---
+
+## 4. Configuration de l’environnement virtuel
+
+Ajout de ces variables d’environnement supplémentaires :  
+```bash
+export PYTHONPATH=/usr/local/lib/python3.10/dist-packages:/usr/lib/python3.10/site-packages:$PYTHONPATH
+export PYTHONPATH="/usr/lib/python3/dist-packages:$PYTHONPATH"
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
+
+Les rendre persistantes en les ajoutant au fichier `~/.bashrc` :  
+```bash
+echo 'export PYTHONPATH=/usr/local/lib/python3.10/dist-packages:/usr/lib/python3.10/site-packages:$PYTHONPATH' >> ~/.bashrc
+echo 'export PYTHONPATH="/usr/lib/python3/dist-packages:$PYTHONPATH"' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+## 5. Lancer LoRattack
+
+Une fois l’installation terminée, exécution de :  
+```bash
+cd lorattack
+./run.sh
+```
+
+L’outil sera prêt à sniffer et rejouer des attaques sur LoRaWAN avec l’USRP.
+
+---
+
+Avec ces étapes, l’outil LoRattack devrait être correctement configuré et fonctionnel avec **gr-lora** et **gr-lora_sdr** installés.

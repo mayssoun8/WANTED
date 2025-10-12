@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="fr" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Introduction &#8212; Documentation Reproduction d&#39;attaques sur LoRaWAN 1.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=7a28dfa3"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=bf059b8c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Attaques" href="attaques.html" />
+    <link rel="prev" title="Bienvenue dans la documentation du projet de reproductions d’attaques sur LoRaWAN!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Lien vers cette rubrique">¶</a></h1>
+<section id="objectif-du-projet">
+<h2>Objectif du projet<a class="headerlink" href="#objectif-du-projet" title="Lien vers cette rubrique">¶</a></h2>
+<p>Ce projet a pour but d’expérimenter différentes attaques sur un réseau LoRaWAN, notamment :</p>
+<ul class="simple">
+<li><p><strong>Sniffing</strong> : interception des paquets LoRaWAN transmis sur le réseau.</p></li>
+<li><p><strong>Brouillage</strong> : perturbation du signal pour empêcher la communication.</p></li>
+<li><p><strong>Rejeu de paquets</strong> : retransmission de paquets interceptés pour tromper le réseau.</p></li>
+<li><p><strong>Usurpation d’identité</strong> : imitation d’un nœud légitime pour envoyer des données falsifiées.</p></li>
+</ul>
+<p>Ce document décrit la mise en place de ces attaques ainsi que leur reproduction dans le cadre du projet.</p>
+</section>
+</section>
+<section id="infrastructure-lorawan">
+<h1>Infrastructure LoRaWAN<a class="headerlink" href="#infrastructure-lorawan" title="Lien vers cette rubrique">¶</a></h1>
+<section id="materiel-utilise">
+<h2>Matériel utilisé<a class="headerlink" href="#materiel-utilise" title="Lien vers cette rubrique">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Passerelle LoRaWAN</strong> fournie par l’encadrant, incluant :</p>
+<ul>
+<li><p>Raspberry Pi 3 Model B</p></li>
+<li><p>Module concentrateur LoRa IC880A</p></li>
+</ul>
+</li>
+<li><p><strong>Serveur réseau ChirpStack</strong> préconfiguré sur la passerelle.</p></li>
+</ul>
+</section>
+<section id="logiciel-utilise">
+<h2>Logiciel utilisé<a class="headerlink" href="#logiciel-utilise" title="Lien vers cette rubrique">¶</a></h2>
+<section id="chirpstack">
+<h3>ChirpStack<a class="headerlink" href="#chirpstack" title="Lien vers cette rubrique">¶</a></h3>
+<p>ChirpStack est utilisé comme serveur réseau LoRaWAN. Pour accéder à son interface web et configurer l’application :</p>
+<ol class="arabic simple">
+<li><p>Se connecter au réseau WiFi de la passerelle.</p></li>
+<li><p>Ouvrir un navigateur et entrer l’URL : <cite>http://192.168.0.1:8080/</cite>.</p></li>
+</ol>
+</section>
+</section>
+</section>
+<section id="noeud-legitime">
+<h1>Noeud légitime<a class="headerlink" href="#noeud-legitime" title="Lien vers cette rubrique">¶</a></h1>
+<section id="id1">
+<h2>Matériel utilisé<a class="headerlink" href="#id1" title="Lien vers cette rubrique">¶</a></h2>
+<ul class="simple">
+<li><p><strong>LoPy4 Pycom</strong></p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>Logiciel utilisé<a class="headerlink" href="#id2" title="Lien vers cette rubrique">¶</a></h2>
+<section id="pymakr-via-vs-code">
+<h3>Pymakr via VS Code<a class="headerlink" href="#pymakr-via-vs-code" title="Lien vers cette rubrique">¶</a></h3>
+<p>Mise en place :</p>
+<ol class="arabic simple">
+<li><p>Installer l’extension <strong>Pymakr</strong> sur <strong>VS Code</strong>.</p></li>
+<li><p>Brancher le <strong>LoPy4 Pycom</strong> au PC via USB.</p></li>
+<li><p>Synchroniser le LoPy4 avec le projet.</p></li>
+<li><p>Flasher le code souhaité :</p>
+<ul class="simple">
+<li><p>Sélectionner <strong>« Upload on device »</strong>.</p></li>
+<li><p>Exécuter le script avec <strong>« Run on device »</strong> dans l’onglet Pymakr.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="code-utilise">
+<h3>Code utilisé<a class="headerlink" href="#code-utilise" title="Lien vers cette rubrique">¶</a></h3>
+<p>Les scripts sont disponibles dans le répertoire <strong>`noeud_pycom`</strong> du dépôt Git.</p>
+<ul class="simple">
+<li><p><strong>Fichier principal</strong> : <cite>simulation_capteur_humidité.py</cite></p>
+<ul>
+<li><p>Ce fichier simule un capteur d’humidité.</p></li>
+<li><p>Les clés cryptographiques peuvent être modifiées directement dans le code.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="noeud-attaquant">
+<h1>Noeud attaquant<a class="headerlink" href="#noeud-attaquant" title="Lien vers cette rubrique">¶</a></h1>
+<section id="id3">
+<h2>Matériel utilisé<a class="headerlink" href="#id3" title="Lien vers cette rubrique">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Arduino Dragino</strong></p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>Logiciel utilisé<a class="headerlink" href="#id4" title="Lien vers cette rubrique">¶</a></h2>
+<section id="arduino-ide">
+<h3>Arduino IDE<a class="headerlink" href="#arduino-ide" title="Lien vers cette rubrique">¶</a></h3>
+<p>Ou directement via un terminal Linux.</p>
+</section>
+<section id="bibliotheques-utilisees">
+<h3>Bibliothèques utilisées<a class="headerlink" href="#bibliotheques-utilisees" title="Lien vers cette rubrique">¶</a></h3>
+<p>Pour ce projet, nous utilisons plusieurs bibliothèques Arduino compatibles avec LoRaWAN :</p>
+<ul class="simple">
+<li><p><strong>LoRa</strong> de <strong>Sandeep Mistry</strong> (v0.8.0)</p></li>
+<li><p><strong>MCCI LoRaWAN LMIC</strong> de <strong>Terry Moore</strong> (v5.0.1)</p></li>
+<li><p><strong>RadioLib</strong> de <strong>Jan Gromes</strong> (v7.1.2)</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Reproduction d'attaques sur LoRaWAN</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contenu:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#objectif-du-projet">Objectif du projet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#infrastructure-lorawan">Infrastructure LoRaWAN</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#materiel-utilise">Matériel utilisé</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logiciel-utilise">Logiciel utilisé</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#noeud-legitime">Noeud légitime</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Matériel utilisé</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">Logiciel utilisé</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#noeud-attaquant">Noeud attaquant</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Matériel utilisé</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Logiciel utilisé</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="attaques.html">Attaques</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scenario.html">Scénario</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="Chapitre précédent">Bienvenue dans la documentation du projet de reproductions d’attaques sur LoRaWAN!</a></li>
+      <li>Next: <a href="attaques.html" title="Chapitre suivant">Attaques</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Atbane, Friboulet.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/introduction.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

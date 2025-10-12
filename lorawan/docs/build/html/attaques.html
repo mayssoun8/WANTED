@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html lang="fr" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Attaques &#8212; Documentation Reproduction d&#39;attaques sur LoRaWAN 1.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=7a28dfa3"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=bf059b8c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Scénario" href="scenario.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="attaques">
+<h1>Attaques<a class="headerlink" href="#attaques" title="Lien vers cette rubrique">¶</a></h1>
+<section id="attaque-sur-cles-basiques">
+<h2>Attaque sur clés basiques<a class="headerlink" href="#attaque-sur-cles-basiques" title="Lien vers cette rubrique">¶</a></h2>
+<section id="contexte">
+<h3>Contexte<a class="headerlink" href="#contexte" title="Lien vers cette rubrique">¶</a></h3>
+<p>Dans un réseau LoRaWAN agricole utilisant une version obsolète de LoRaMAC (comme la 1.0.x), plusieurs failles de sécurité sont présentes :</p>
+<ul class="simple">
+<li><p><strong>Ancienne version du protocole</strong> : LoRaMAC 1.0.x utilise moins de clés de sécurité, ce qui le rend vulnérable par rapport à la version 1.1.x.</p></li>
+<li><p><strong>Identifiants faibles et prévisibles</strong> : Certains DevEUI et AppKey comme <cite>000…</cite>, <cite>111…</cite>, ou <cite>123…</cite> sont faciles à deviner, facilitant les attaques par force brute.</p></li>
+</ul>
+<p>Ces vulnérabilités rendent le réseau facile à attaquer. L’objectif est d’exploiter cette faiblesse liée au choix des identifiants.</p>
+</section>
+<section id="methodologie-de-l-attaque">
+<h3>Méthodologie de l’attaque<a class="headerlink" href="#methodologie-de-l-attaque" title="Lien vers cette rubrique">¶</a></h3>
+<p>L’attaque repose sur la force brute du <strong>DevEUI</strong> et de l”<strong>AppKey</strong>, ce qui permet d’établir une connexion avec la passerelle et d’envoyer ensuite des données falsifiées.</p>
+</section>
+<section id="rappel-des-cles-de-securite-dans-loramac-1-0-x-en-utilisant-otaa">
+<h3>Rappel des clés de sécurité dans LoRaMAC 1.0.x en utilisant OTAA<a class="headerlink" href="#rappel-des-cles-de-securite-dans-loramac-1-0-x-en-utilisant-otaa" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>AppKey</strong> : Sécurise l’activation OTAA et génère les clés de session.</p></li>
+<li><p><strong>AppSKey</strong> : Chiffre/déchiffre les données utilisateur.</p></li>
+<li><p><strong>NwkSKey</strong> : Assure l’intégrité des messages MAC.</p></li>
+</ul>
+</section>
+<section id="contre-mesures-et-recommandations">
+<h3>Contre-mesures et recommandations<a class="headerlink" href="#contre-mesures-et-recommandations" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p>Mettre à jour vers <strong>LoRaMAC 1.1.x</strong> pour bénéficier des améliorations de sécurité.</p></li>
+<li><p>Utiliser des clés cryptographiques <strong>complexes et aléatoires</strong>, difficiles à deviner.</p></li>
+<li><p><strong>Renouveler régulièrement</strong> les clés du réseau pour limiter l’exposition en cas de fuite.</p></li>
+</ul>
+</section>
+<section id="ameliorations-possibles">
+<h3>Améliorations possibles<a class="headerlink" href="#ameliorations-possibles" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Étendre la bibliothèque de clés</strong> pour tester un plus grand nombre de combinaisons courantes dans les déploiements vulnérables.</p></li>
+<li><p><strong>Optimiser les délais d’attente</strong> pour réduire le temps total d’exécution sans compromettre la fiabilité des tests.</p></li>
+</ul>
+</section>
+<section id="limites-de-l-attaque">
+<h3>Limites de l’attaque<a class="headerlink" href="#limites-de-l-attaque" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Temps d’exécution croissant</strong> : Plus le nombre de clés testées est élevé, plus le temps de brute-force augmente de manière exponentielle.</p></li>
+<li><p><strong>Délais à respecter</strong> : Chaque test doit respecter un délai (~10-15s) pour laisser la connexion s’établir.</p></li>
+<li><p><strong>Absence de ciblage précis</strong> : L’attaque ne permet pas de choisir un réseau spécifique.</p></li>
+</ul>
+<p>Lors des tests, nous avons pu rejoindre un réseau en utilisant des identifiants faibles comme :</p>
+<ul class="simple">
+<li><p><strong>DevEUI</strong> : <cite>1111111111111111</cite></p></li>
+<li><p><strong>AppKey</strong> : <cite>11111111111111111111111111111111</cite></p></li>
+</ul>
+<p>Ou encore :</p>
+<ul class="simple">
+<li><p><strong>DevEUI</strong> : <cite>AAAAAAAAAAAAAAAA</cite></p></li>
+<li><p><strong>AppKey</strong> : <cite>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</cite></p></li>
+</ul>
+<p>Ces valeurs n’étaient pas incluses dans notre banc de test initial, ce qui montre qu’un réseau avec de telles configurations était accessible.</p>
+<p><strong>Conclusion</strong> : Bien que l’attaque soit efficace contre des identifiants faibles, son efficacité dépend fortement du contexte et du nombre de clés testées.</p>
+</section>
+<section id="deploiement">
+<h3>Déploiement<a class="headerlink" href="#deploiement" title="Lien vers cette rubrique">¶</a></h3>
+<p>Le code source de cette attaque est disponible dans le répertoire :
+<code class="docutils literal notranslate"><span class="pre">attaques/attaque_cles_basiques</span></code></p>
+<p>Deux plateformes matérielles peuvent être utilisées :</p>
+<ol class="arabic simple">
+<li><p><strong>Arduino Dragino</strong></p></li>
+<li><p><strong>LoPy4</strong> (déjà utilisé comme nœud légitime, donc moins privilégié ici)</p></li>
+</ol>
+<section id="utilisation-avec-lopy4">
+<h4>Utilisation avec LoPy4<a class="headerlink" href="#utilisation-avec-lopy4" title="Lien vers cette rubrique">¶</a></h4>
+<p>Si on veut quand même utiliser un <strong>LoPy4</strong> pour cette attaque, il suffit de flasher le code contenu dans :</p>
+<p><code class="docutils literal notranslate"><span class="pre">attaques/attaque_cles_basiques/pycom</span></code></p>
+<p>via <strong>Pymakr</strong> sur un autre LoPy4, comme nous l’avons fait pour le nœud légitime.</p>
+</section>
+<section id="utilisation-avec-arduino-dragino">
+<h4>Utilisation avec Arduino Dragino<a class="headerlink" href="#utilisation-avec-arduino-dragino" title="Lien vers cette rubrique">¶</a></h4>
+<p>Avant de commencer, il faut installer la bibliothèque <strong>MCCI LoRaWAN LMIC</strong> disponible ici :
+<cite>https://github.com/mcci-catena/arduino-lorawan.git</cite></p>
+<p>Cette bibliothèque est disponible directement dans <strong>Arduino IDE</strong> et permet de créer un nœud LoRaWAN avec du matériel Arduino Dragino, ce qui est indispensable pour réaliser cette attaque.</p>
+<p>Une fois la bibliothèque installée, il suffit de :</p>
+<ol class="arabic simple">
+<li><p>Ouvrir le fichier :
+<code class="docutils literal notranslate"><span class="pre">attaques/attaque_cles_basiques/arduino/attaquesArduino.ino</span></code></p></li>
+<li><p>Téléverser le code sur la carte :</p>
+<ul class="simple">
+<li><p>Via <strong>Arduino IDE</strong>, puis observer le moniteur série.</p></li>
+<li><p>Ou en ligne de commande :
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">arduino</span> <span class="pre">--upload</span> <span class="pre">attaqueArduino.ino</span> <span class="pre">--port</span> <span class="pre">/dev/ttyACM1</span>
+<span class="pre">`</span></code></p></li>
+<li><p>Pour voir la sortie, utiliser <strong>minicom</strong> :
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">minicom</span> <span class="pre">-D</span> <span class="pre">/dev/ttyACM1</span> <span class="pre">-b</span> <span class="pre">9600</span>
+<span class="pre">`</span></code></p></li>
+</ul>
+</li>
+</ol>
+<p>—</p>
+</section>
+</section>
+</section>
+<section id="sniffing">
+<h2>Sniffing<a class="headerlink" href="#sniffing" title="Lien vers cette rubrique">¶</a></h2>
+<section id="id1">
+<h3>Contexte<a class="headerlink" href="#id1" title="Lien vers cette rubrique">¶</a></h3>
+<p>Le sniffing LoRaWAN consiste à intercepter passivement les communications radio entre les dispositifs et la passerelle. Cette technique permet :</p>
+<ul class="simple">
+<li><p>D’analyser le trafic réseau pour identifier des vulnérabilités</p></li>
+<li><p>De capturer des paquets pour des attaques ultérieures (comme le rejeu)</p></li>
+<li><p>De diagnostiquer des problèmes de configuration</p></li>
+</ul>
+</section>
+<section id="methodologie">
+<h3>Méthodologie<a class="headerlink" href="#methodologie" title="Lien vers cette rubrique">¶</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Configuration matérielle</strong> :
+- Utilisation d’un Arduino Dragino
+- Réglage de la fréquence LoRa (868 MHz en Europe)</p></li>
+<li><p><strong>Capture des paquets</strong> :
+- Interception des messages Join-Request et Data Up
+- Décodage des en-têtes LoRaWAN (MHDR, DevEUI, etc.)</p></li>
+<li><p><strong>Analyse des trames</strong> :
+- Conversion little-endian/big-endian
+- Vérification des MIC (Message Integrity Code)</p></li>
+</ol>
+</section>
+<section id="exemple-de-paquets-captures">
+<h3>Exemple de paquets capturés<a class="headerlink" href="#exemple-de-paquets-captures" title="Lien vers cette rubrique">¶</a></h3>
+<p>Join-Request typique :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>00 00 00 00 00 00 00 00 00 57 2A 71 99 49 D5 B3 70 DD 7C 93 36 E4 C9
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>MHDR (0x00)</strong> : Join-Request</p></li>
+<li><p><strong>AppEUI</strong> : 00 00 00 00 00 00 00 00 (valeur par défaut)</p></li>
+<li><p><strong>DevEUI</strong> : 70 B3 D5 49 99 71 2A 57 (après conversion big-endian)</p></li>
+<li><p><strong>DevNonce</strong> : DD 7C</p></li>
+<li><p><strong>MIC</strong> : 93 36 E4 C9</p></li>
+</ul>
+<p>Trames Data Up :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>40 E2 F1 54 00 00 00 00 02 6F BD 26 07 55 5E 51 5A BA 78 C1 AE E8 76 D0 23 15 FA
+40 E2 F1 54 00 00 03 00 02 86 4F A9 79 3E C1 42 97 4E 06 F4 F4 1E E2 75 BC 79 BD
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>MHDR (0x40)</strong> : Unconfirmed Data Up</p></li>
+<li><p><strong>FCnt</strong> : 00 00 puis 03 00 (incrémentation visible)</p></li>
+</ul>
+</section>
+<section id="outils-necessaires">
+<h3>Outils nécessaires<a class="headerlink" href="#outils-necessaires" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Matériel</strong> :
+- Arduino Dragino
+- Antenne LoRa compatible 868MHz</p></li>
+<li><p><strong>Logiciels</strong> :
+- Bibliothèque <a class="reference external" href="https://github.com/sandeepmistry/arduino-LoRa">arduino-LoRa</a>
+- Minicom pour l’analyse des logs</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Déploiement<a class="headerlink" href="#id2" title="Lien vers cette rubrique">¶</a></h3>
+<section id="installation-du-sniffer">
+<h4>Installation du sniffer<a class="headerlink" href="#installation-du-sniffer" title="Lien vers cette rubrique">¶</a></h4>
+<ol class="arabic">
+<li><p>Flasher le code sur l’Arduino :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>arduino<span class="w"> </span>--upload<span class="w"> </span>attaques/attaque_rejeu/replay_arduino/arduino_sniffer/arduino_sniffer.ino<span class="w"> </span>--port<span class="w"> </span>/dev/ttyACM1
+</pre></div>
+</div>
+</li>
+<li><p>Visualisation des paquets avec Minicom :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>minicom<span class="w"> </span>-D<span class="w"> </span>/dev/ttyACM1<span class="w"> </span>-b<span class="w"> </span><span class="m">9600</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="automatisation-avec-le-script-sniffer">
+<h4>Automatisation avec le script sniffer<a class="headerlink" href="#automatisation-avec-le-script-sniffer" title="Lien vers cette rubrique">¶</a></h4>
+<p>Le script <code class="docutils literal notranslate"><span class="pre">sniffer.sh</span></code> permet d’automatiser la capture :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./attaques/attaque_rejeu/replay_arduino/arduino_sniffer/sniffer.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span>/dev/ttyACM1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-b<span class="w"> </span><span class="m">9600</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span>captures.txt
+</pre></div>
+</div>
+<p>Options disponibles :</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-p</span></code> : Port série (par défaut /dev/ttyACM1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-b</span></code> : Baud rate (par défaut 9600)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-o</span></code> : Fichier de sortie</p></li>
+</ul>
+</section>
+</section>
+<section id="analyse-avancee">
+<h3>Analyse avancée<a class="headerlink" href="#analyse-avancee" title="Lien vers cette rubrique">¶</a></h3>
+<p>Pour interpréter les captures :</p>
+<ol class="arabic simple">
+<li><p><strong>Identifier le type de message</strong> via le MHDR :
+- <code class="docutils literal notranslate"><span class="pre">0x00</span></code> : Join-Request
+- <code class="docutils literal notranslate"><span class="pre">0x40</span></code> : Unconfirmed Data Up
+- <code class="docutils literal notranslate"><span class="pre">0x80</span></code> : Confirmed Data Up</p></li>
+<li><p><strong>Extraire les identifiants</strong> :
+- DevEUI (octets 9-16 en little-endian)
+- AppEUI (octets 1-8)</p></li>
+<li><p><strong>Vérifier l’intégrité</strong> :
+- Les 4 derniers octets représentent le MIC
+- Doivent correspondre au calcul AES-CMAC avec la NwkSKey</p></li>
+</ol>
+</section>
+<section id="contre-mesures">
+<h3>Contre-mesures<a class="headerlink" href="#contre-mesures" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Activer le chiffrement</strong> (AES-128) pour empêcher la lecture des payloads</p></li>
+<li><p><strong>Utiliser des MIC robustes</strong> et vérifier systématiquement leur validité</p></li>
+</ul>
+</section>
+<section id="limites">
+<h3>Limites<a class="headerlink" href="#limites" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Portée limitée</strong> : Nécessité d’être à proximité physique du réseau</p></li>
+<li><p><strong>Dépendance matérielle</strong> : Sensibilité du récepteur</p></li>
+<li><p><strong>Interprétation partielle</strong> : Sans accès aux clés, certains champs restent illisibles (écoute possible mais incompréhensible si réseau bien configuré)</p></li>
+</ul>
+<p>—</p>
+</section>
+</section>
+<section id="attaque-par-rejeu">
+<h2>Attaque par rejeu<a class="headerlink" href="#attaque-par-rejeu" title="Lien vers cette rubrique">¶</a></h2>
+<section id="id3">
+<h3>Contexte<a class="headerlink" href="#id3" title="Lien vers cette rubrique">¶</a></h3>
+<p>Dans un réseau LoRaWAN vulnérable, l’attaque par rejeu (<em>replay attack</em>) exploite la retransmission de paquets légitimes capturés pour :</p>
+<ul class="simple">
+<li><p>Perturber le réseau en saturant la passerelle.</p></li>
+<li><p>Falsifier des données (exemple : fausses mesures de capteurs).</p></li>
+<li><p>Contourner les mécanismes d’authentification si les compteurs de trames (FCnt) ou les MIC ne sont pas vérifiés.</p></li>
+</ul>
+<p>Cette attaque est particulièrement efficace si :</p>
+<ul class="simple">
+<li><p>Le réseau n’utilise pas de compteurs de trames incrémentiels.</p></li>
+<li><p>Les MIC ne sont pas recalculés après capture.</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>Méthodologie de l’attaque<a class="headerlink" href="#id4" title="Lien vers cette rubrique">¶</a></h3>
+<ol class="arabic simple">
+<li><p><strong>Capture de paquets</strong> :
+- Utilisation d’un sniffer (exemple : LoRattack avec USRP) ou d’un Arduino Dragino avec l’outil de sniffing défini dans la section Sniffing de cette documentation.
+- Filtrage des paquets <em>Unconfirmed Data Up</em> (MHDR = <cite>0x40</cite>).</p></li>
+<li><p><strong>Analyse des trames</strong> :
+- Extraction du <strong>DevEUI</strong>, <strong>FCnt</strong>, et <strong>MIC</strong>.
+- Conversion des formats (little-endian/big-endian).</p></li>
+<li><p><strong>Rejeu automatisé</strong> :
+- Réinjection des paquets capturés avec modification du FCnt.
+- Optionnel : Recalcul du MIC si la NwkSKey est connue (rare en pratique).</p></li>
+</ol>
+</section>
+<section id="exemple-de-paquet-capture">
+<h3>Exemple de paquet capturé<a class="headerlink" href="#exemple-de-paquet-capture" title="Lien vers cette rubrique">¶</a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>40 E2 F1 54 00 00 05 00 02 BF AE FF F4 7D 78 9A A3 0E 61 44 A7 39 90 93 9E 25 E2
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>MHDR (0x40)</strong> : <em>Unconfirmed Data Up</em>.</p></li>
+<li><p><strong>FCnt</strong> : <cite>05 00</cite> (valeur incrémentielle).</p></li>
+<li><p><strong>MIC</strong> : <cite>93 9E 25 E2</cite> (vérifié par la passerelle).</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Outils nécessaires<a class="headerlink" href="#id5" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Matériel</strong> :
+- Carte Arduino Dragino de préférence ou USRP (pour LoRattack).</p></li>
+<li><p><strong>Logiciels</strong> :
+- <a class="reference external" href="https://github.com/konicst1/lorattack">LoRattack</a> (sniffing/rejeu).
+- Bibliothèque <a class="reference external" href="https://github.com/sandeepmistry/arduino-LoRa">arduino-LoRa</a>.</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Déploiement<a class="headerlink" href="#id7" title="Lien vers cette rubrique">¶</a></h3>
+<section id="avec-lorattack-usrp">
+<h4>Avec LoRattack (USRP)<a class="headerlink" href="#avec-lorattack-usrp" title="Lien vers cette rubrique">¶</a></h4>
+<ol class="arabic">
+<li><p>Installer les dépendances :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gnuradio<span class="w"> </span>bittwist<span class="w"> </span>uhd-host
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/konicst1/lorattack.git
+<span class="nb">cd</span><span class="w"> </span>lorattack<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./run.sh
+</pre></div>
+</div>
+</li>
+<li><p>Capturer et rejouer les paquets :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Capture</span>
+Lancer<span class="w"> </span>./run.sh<span class="w"> </span>et<span class="w"> </span>sélectionner<span class="w"> </span>le<span class="w"> </span>sniffing.
+<span class="c1"># Rejeu</span>
+Lancer<span class="w"> </span>./run.sh<span class="w"> </span>et<span class="w"> </span>sélectionner<span class="w"> </span>le<span class="w"> </span>replay<span class="w"> </span>à<span class="w"> </span>partir<span class="w"> </span>d<span class="s1">&#39;un fichier pcap obtenu dans l&#39;</span>étape<span class="w"> </span>précédente.
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="avec-arduino-dragino-de-maniere-manuelle">
+<h4>Avec Arduino Dragino (de manière manuelle)<a class="headerlink" href="#avec-arduino-dragino-de-maniere-manuelle" title="Lien vers cette rubrique">¶</a></h4>
+<ol class="arabic">
+<li><p>Flasher le code de rejeu en veillant à modifier le paquet à rejouer dans le code source :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>arduino<span class="w"> </span>--upload<span class="w"> </span>attaques/attaque_rejeu/replay_arduino/arduino_player/arduino_player.ino<span class="w"> </span>--port<span class="w"> </span>/dev/ttyACM1
+</pre></div>
+</div>
+</li>
+<li><p>Analyser les logs via minicom :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>minicom<span class="w"> </span>-D<span class="w"> </span>/dev/ttyACM1<span class="w"> </span>-b<span class="w"> </span><span class="m">9600</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="avec-arduino-dragino-de-maniere-automatisee">
+<h4>Avec Arduino Dragino (de manière automatisée)<a class="headerlink" href="#avec-arduino-dragino-de-maniere-automatisee" title="Lien vers cette rubrique">¶</a></h4>
+<ol class="arabic">
+<li><p>Flasher le code de rejeu automatisé :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>arduino<span class="w"> </span>--upload<span class="w"> </span>attaques/attaque_rejeu/replay_arduino/arduino_total_replay/arduino_total_replay.ino<span class="w"> </span>--port<span class="w"> </span>/dev/ttyACM1
+</pre></div>
+</div>
+</li>
+<li><p>Analyser les logs via minicom :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>minicom<span class="w"> </span>-D<span class="w"> </span>/dev/ttyACM1<span class="w"> </span>-b<span class="w"> </span><span class="m">9600</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="id8">
+<h3>Contre-mesures<a class="headerlink" href="#id8" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Validation stricte du FCnt</strong> : Rejeter les paquets avec un compteur inférieur ou égal à la dernière valeur enregistrée.</p></li>
+<li><p><strong>Rotation des clés de session</strong> : Limiter la durée de vie des NwkSKey/AppSKey, en renouvelant les sessions régulièrement.</p></li>
+<li><p><strong>Chiffrement de bout en bout</strong> : Empêcher la lecture/modification des payloads.</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>Limites<a class="headerlink" href="#id9" title="Lien vers cette rubrique">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Efficacité réduite</strong> : Si le réseau vérifie les MIC et FCnt, les paquets rejoués sont ignorés.</p></li>
+<li><p><strong>Portée limitée</strong> : Nécessite une proximité physique avec le réseau cible.</p></li>
+<li><p><strong>Complexité</strong> : Recalculer le MIC sans connaître la NwkSKey est impossible.</p></li>
+</ul>
+</section>
+<section id="exemple-pratique">
+<h3>Exemple pratique<a class="headerlink" href="#exemple-pratique" title="Lien vers cette rubrique">¶</a></h3>
+<p>Un paquet rejoué avec succès (FCnt incrémenté) :</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[ORIGINAL]  40...05 00...93 9E 25 E2
+[REPLAYED]  40...06 00...A1 B2 C3 D4  # MIC invalide, mais FCnt mis à jour
+</pre></div>
+</div>
+<p>Ce paquet sera visible dans les logs du sniffer, mais rejeté par ChirpStack sans MIC valide.</p>
+<p>—</p>
+</section>
+</section>
+<section id="attaque-de-brouillage">
+<h2>Attaque de brouillage<a class="headerlink" href="#attaque-de-brouillage" title="Lien vers cette rubrique">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Reproduction d'attaques sur LoRaWAN</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contenu:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#infrastructure-lorawan">Infrastructure LoRaWAN</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#noeud-legitime">Noeud légitime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html#noeud-attaquant">Noeud attaquant</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Attaques</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#attaque-sur-cles-basiques">Attaque sur clés basiques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sniffing">Sniffing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attaque-par-rejeu">Attaque par rejeu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attaque-de-brouillage">Attaque de brouillage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scenario.html">Scénario</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="introduction.html" title="Chapitre précédent">Introduction</a></li>
+      <li>Next: <a href="scenario.html" title="Chapitre suivant">Scénario</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Recherche rapide</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2025, Atbane, Friboulet.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/attaques.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
