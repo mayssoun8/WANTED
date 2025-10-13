@@ -1,0 +1,4 @@
+- Comprendre les attaques fournies ciblant les réseaux IoT / LoRaWAN (brouillage, attaques sur les clés, attaques par rejeu, etc.).
+- Etudier les infos associées dans le dossier "lorawan"
+- Débuter la rédaction du cahier des charges (spécifications).
+- Concevoir la structure initiale de la base de données pour stocker les nouvelles attaques.
